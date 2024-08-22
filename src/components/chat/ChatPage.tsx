@@ -80,10 +80,15 @@ const ChatPage = () => {
 								{paragraph}
 							</p>
 						))}
-						<div className="horizontal self-end gap-3">
-							<ActionButton text="Rewrite" onClick={onRewrite} />
-							<ActionButton text="Copy" onClick={() => handleCopy({ text: response.join("\n\n"), toast })} />
-							<GenerateButton text="Continue writing" onClick={onContinue} />
+						<div className="horizontal space-between gap-2">
+							<button className="horizontal center">
+								<p className="text-sm font-medium text-zinc-500/80">Cancel</p>
+							</button>
+							<div className="flex gap-3">
+								<ActionButton text="Rewrite" onClick={onRewrite} />
+								<ActionButton text="Copy" onClick={() => handleCopy({ text: response.join("\n\n"), toast })} />
+								<GenerateButton text="Continue writing" onClick={onContinue} />
+							</div>
 						</div>
 					</>
 				)}
