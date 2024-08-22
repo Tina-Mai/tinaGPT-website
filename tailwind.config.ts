@@ -9,6 +9,8 @@ const config: Config = {
 			},
 			fontFamily: {
 				sans: ["Hanken Grotesk", "sans-serif"],
+				serif: ["EB Garamond", "serif"],
+				// serif: ["Newsreader", "serif"],
 				mono: ["JetBrains Mono", "monospace"],
 			},
 		},
