@@ -1,7 +1,7 @@
 "use client";
-import Header from "@/components/Header";
-import ChatPage from "@/components/ChatPage";
-import Footer from "@/components/Footer";
+import Header from "@/components/home/Header";
+import ChatPage from "@/components/chat/ChatPage";
+import Footer from "@/components/home/Footer";
 
 export default function Home() {
 	return (
