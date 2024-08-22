@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Tag from "./Tag";
+import Tag from "./HeaderButton";
 import openaiLogo from "@/assets/openai.svg";
 
 const Header = () => {
@@ -12,10 +12,10 @@ const Header = () => {
 					<Image src={openaiLogo} alt="GPT-4o" width={15} height={15} className="inline mb-1 opacity-35" /> GPT-4o.
 				</span>
 			</p>
-			<div className="horizontal gap-2">
+			<div className="horizontal gap-3">
 				<Tag text="how to prompt TinaGPT" bgColor="bg-blue-400" />
-				<Tag text="source code" bgColor="bg-lime-500" />
-				<Tag text="give feedback" bgColor="bg-indigo-400" />
+				<Tag text="source code" bgColor="bg-lime-500" href="https://github.com/tina-mai/tinagpt" />
+				<Tag text="say hi 👋" bgColor="bg-indigo-400" href="https://x.com/t1namai" />
 			</div>
 		</header>
 	);
