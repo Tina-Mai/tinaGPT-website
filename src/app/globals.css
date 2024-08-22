@@ -1,33 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+@layer components {
+	.debug {
+		@apply border border-red-500;
+	}
+
+	.horizontal {
+		@apply flex flex-row;
+	}
+
+	.vertical {
+		@apply flex flex-col;
+	}
+
+	.horizontal.center-v {
+		@apply items-center;
+	}
+
+	.horizontal.center-h {
+		@apply justify-center;
+	}
+
+	.horizontal.center {
+		@apply justify-center items-center;
+	}
+
+	.vertical.center-v {
+		@apply justify-center;
+	}
+
+	.vertical.center-h {
+		@apply items-center;
+	}
+
+	.vertical.center {
+		@apply justify-center items-center;
+	}
+
+	.space-between {
+		@apply justify-between;
+	}
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
+/* default background color */
+/* .bg-default {
+	@apply bg-[#E0E0E0];
+} */
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+	@apply bg-[#E0E0E0];
 }
