@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent } from "react";
+import React, { useState, KeyboardEvent } from "react";
 import { motion } from "framer-motion";
 import { handleCopy } from "@/lib/helpers/copy";
 import { useToast } from "@/components/ui/use-toast";
@@ -70,7 +70,7 @@ const ChatPage = () => {
 	};
 
 	return (
-		<div className={`flex-grow vertical mx-5 sm:mx-auto sm:w-4/5 md:w-2/3  bg-white bg-opacity-75 ${!submitted && "hover:bg-opacity-100"} transition-all rounded-t-2xl overflow-hidden`}>
+		<div className={`flex-grow vertical mx-5 sm:mx-auto sm:w-4/5 md:w-2/3 bg-white bg-opacity-75 ${!submitted && "hover:bg-opacity-100"} transition-all rounded-t-2xl overflow-hidden`}>
 			<div className={`flex-grow vertical px-8 py-8 sm:px-14 sm:py-12 overflow-auto ${!submitted ? "justify-between gap-5" : "gap-10"}`}>
 				<Input disabled={submitted} setInput={setInput} handleKeyDown={handleKeyDown} />
 				{!submitted && <GenerateButton text="Start writing" onClick={onSubmit} />}

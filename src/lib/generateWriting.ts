@@ -7,7 +7,8 @@ const openai = new OpenAI({
 export async function generateWriting(prompt: string): Promise<string[]> {
 	try {
 		const response = await openai.chat.completions.create({
-			model: "ft:gpt-4o-2024-08-06:personal:tinagpt:9yto1F3n",
+			model: "gpt-4o-mini",
+			// model: "ft:gpt-4o-2024-08-06:personal:tinagpt:9yto1F3n",
 			messages: [
 				{
 					role: "system",
@@ -16,7 +17,7 @@ export async function generateWriting(prompt: string): Promise<string[]> {
 				},
 				{ role: "user", content: prompt },
 			],
-			max_tokens: 10,
+			max_tokens: 5,
 		});
 
 		const content = response.choices[0].message.content || "No response generated.";
