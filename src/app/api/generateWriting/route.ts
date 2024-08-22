@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateWriting } from "@/lib/generateWriting";
+import { generateWriting } from "@/lib/openAI/generateWriting";
 
 export async function POST(req: NextRequest) {
 	const { prompt } = await req.json();

@@ -1,4 +1,16 @@
-const Input = ({ disabled, setInput, handleKeyDown }: { disabled: boolean; setInput: (value: string) => void; handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void }) => {
+import React, { useState } from "react";
+
+const Input = ({
+	disabled,
+	setInput,
+	handleKeyDown,
+	setFocused,
+}: {
+	disabled: boolean;
+	setInput: (value: string) => void;
+	handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+	setFocused: (isFocused: boolean) => void;
+}) => {
 	return (
 		<textarea
 			className={`bg-transparent sm:text-lg md:text-xl ${
@@ -12,6 +24,8 @@ const Input = ({ disabled, setInput, handleKeyDown }: { disabled: boolean; setIn
 				setInput(e.currentTarget.value);
 			}}
 			onKeyDown={handleKeyDown}
+			onFocus={() => setFocused(true)}
+			onBlur={() => setFocused(false)}
 			disabled={disabled}
 		></textarea>
 	);

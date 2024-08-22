@@ -5,12 +5,14 @@ import { useToast } from "@/components/ui/use-toast";
 import Input from "./Input";
 import GenerateButton from "./GenerateButton";
 import ResponseButtons from "./ResponseButtons";
+import Loading from "./Loading";
 
 const ChatPage = () => {
 	const [input, setInput] = useState("");
 	const [submitted, setSubmitted] = useState(false);
 	const [response, setResponse] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);
+	const [focused, setFocused] = useState(false);
 	const { toast } = useToast();
 
 	const onSubmit = async () => {
@@ -53,10 +55,11 @@ const ChatPage = () => {
 	// handle ⌘ + Enter
 	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
 		if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-			// if not submitted, submit input to start generation
+			// if not submitted: submit input to start generation
 			if (!submitted) {
 				e.preventDefault();
 				onSubmit();
+				// if submitted: continue generation
 			} else {
 				e.preventDefault();
 				onContinue();
@@ -74,12 +77,14 @@ const ChatPage = () => {
 			initial={{ y: "100%" }}
 			animate={{ y: 0 }}
 			transition={{ type: "spring", damping: 20, stiffness: 100 }}
-			className={`flex-grow vertical mx-5 sm:mx-auto sm:w-4/5 md:w-2/3 bg-white bg-opacity-75 ${!submitted && "hover:bg-opacity-100"} rounded-t-2xl overflow-hidden`}
+			className={`flex-grow vertical mx-5 sm:mx-auto sm:w-4/5 md:w-2/3 bg-white ${
+				!submitted ? (focused ? "bg-opacity-100" : "hover:bg-opacity-100 bg-opacity-75") : "bg-opacity-75"
+			} rounded-t-2xl overflow-hidden`}
 		>
-			<div className={`flex-grow vertical px-8 py-8 sm:px-14 sm:py-12 overflow-auto ${!submitted ? "justify-between gap-5" : "gap-10"}`}>
-				<Input disabled={submitted} setInput={setInput} handleKeyDown={handleKeyDown} />
+			<div className={`flex-grow vertical px-8 py-8 sm:px-14 sm:py-12 overflow-auto ${!submitted ? "justify-between gap-5" : "gap-7"}`}>
+				<Input disabled={submitted} setInput={setInput} handleKeyDown={handleKeyDown} setFocused={setFocused} />
 				{!submitted && <GenerateButton text="Start writing" onClick={onSubmit} />}
-				{loading && <p>Generating...</p>}
+				{loading && <Loading />}
 				{submitted && !loading && response && (
 					<>
 						{response.map((paragraph, index) => (

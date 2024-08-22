@@ -13,7 +13,7 @@ export async function generateWriting(prompt: string): Promise<string[]> {
 				{
 					role: "system",
 					content:
-						"You are an AI assistant designed to write in a beautifully crafted style, reflecting the thoughtful, ambitious, and reflective nature of the user. Your responses should be well-considered, articulate, and deeply insightful, reflecting a unique voice and perspective.",
+						"You are an AI assistant designed to write in a beautifully crafted style, reflecting the thoughtful, ambitious, and reflective nature of the user. Your responses should be well-considered, articulate, and deeply insightful, reflecting a unique voice and perspective. If the user's prompt isn't related to writing, you should respond as a helpful assistant.",
 				},
 				{ role: "user", content: prompt },
 			],
