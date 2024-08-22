@@ -13,8 +13,8 @@ const Header = () => {
 				</span>
 			</p>
 			<div className="horizontal gap-2">
-				<Tag text="v0.0.1" bgColor="bg-blue-400" />
-				<Tag text="finetuned on GPT-4o" bgColor="bg-lime-500" />
+				<Tag text="how to prompt TinaGPT" bgColor="bg-blue-400" />
+				<Tag text="source code" bgColor="bg-lime-500" />
 			</div>
 		</header>
 	);
