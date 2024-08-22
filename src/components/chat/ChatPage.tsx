@@ -1,13 +1,17 @@
 import { useState, KeyboardEvent } from "react";
 import { motion } from "framer-motion";
+import { handleCopy } from "@/lib/helpers/copy";
+import { useToast } from "@/components/ui/use-toast";
 import Input from "./Input";
-import SubmitButton from "./SubmitButton";
+import GenerateButton from "./GenerateButton";
+import ActionButton from "./ActionButton";
 
 const ChatPage = () => {
 	const [input, setInput] = useState("");
 	const [submitted, setSubmitted] = useState(false);
 	const [response, setResponse] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);
+	const { toast } = useToast();
 
 	const onSubmit = async () => {
 		if (input.trim().length === 0) return;
@@ -37,10 +41,24 @@ const ChatPage = () => {
 		}
 	};
 
+	const onRewrite = async () => {
+		setResponse([]);
+		onSubmit();
+	};
+
+	const onContinue = async () => {
+		// continue generation
+	};
+
+	// handle ⌘ + Enter
 	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
 		if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-			e.preventDefault();
-			onSubmit();
+			// if not submitted, submit input to start generation
+			if (!submitted) {
+				e.preventDefault();
+				onSubmit();
+			}
+			// if submitted, continue generation
 		}
 	};
 
@@ -51,16 +69,24 @@ const ChatPage = () => {
 			transition={{ type: "spring", damping: 20, stiffness: 100 }}
 			className={`flex-grow vertical w-2/3 mx-auto bg-white bg-opacity-75 ${!submitted && "hover:bg-opacity-100"} transition-all rounded-t-3xl overflow-hidden`}
 		>
-			<div className={`flex-grow vertical px-14 py-12 overflow-auto ${!submitted && "justify-between"} gap-5`}>
+			<div className={`flex-grow vertical px-14 py-12 overflow-auto ${!submitted ? "justify-between gap-5" : "gap-10"}`}>
 				<Input submitted={submitted} setInput={setInput} handleKeyDown={handleKeyDown} />
-				{!submitted && <SubmitButton onSubmit={onSubmit} />}
+				{!submitted && <GenerateButton text="Start writing" onClick={onSubmit} />}
 				{loading && <p>Generating...</p>}
-				{response &&
-					response.map((paragraph, index) => (
-						<p key={index} className="text-xl text-black mb-4">
-							{paragraph}
-						</p>
-					))}
+				{submitted && !loading && response && (
+					<>
+						{response.map((paragraph, index) => (
+							<p key={index} className="text-xl text-black -mb-3">
+								{paragraph}
+							</p>
+						))}
+						<div className="horizontal self-end gap-3">
+							<ActionButton text="Rewrite" onClick={onRewrite} />
+							<ActionButton text="Copy" onClick={() => handleCopy({ text: response.join("\n\n"), toast })} />
+							<GenerateButton text="Continue writing" onClick={onContinue} />
+						</div>
+					</>
+				)}
 			</div>
 		</motion.div>
 	);

@@ -16,7 +16,7 @@ export async function generateWriting(prompt: string): Promise<string[]> {
 				},
 				{ role: "user", content: prompt },
 			],
-			max_tokens: 500,
+			max_tokens: 10,
 		});
 
 		const content = response.choices[0].message.content || "No response generated.";
