@@ -2,6 +2,7 @@ import { useState, KeyboardEvent } from "react";
 import { motion } from "framer-motion";
 import { handleCopy } from "@/lib/helpers/copy";
 import { useToast } from "@/components/ui/use-toast";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 import Input from "./Input";
 import GenerateButton from "./GenerateButton";
 import ActionButton from "./ActionButton";
@@ -57,32 +58,35 @@ const ChatPage = () => {
 			if (!submitted) {
 				e.preventDefault();
 				onSubmit();
+			} else {
+				e.preventDefault();
+				onContinue();
 			}
-			// if submitted, continue generation
 		}
 	};
 
+	const handleCancel = () => {
+		setResponse([]);
+		setSubmitted(false);
+	};
+
 	return (
-		<motion.div
-			initial={{ y: "100%" }}
-			animate={{ y: 0 }}
-			transition={{ type: "spring", damping: 20, stiffness: 100 }}
-			className={`flex-grow vertical w-2/3 mx-auto bg-white bg-opacity-75 ${!submitted && "hover:bg-opacity-100"} transition-all rounded-t-3xl overflow-hidden`}
-		>
-			<div className={`flex-grow vertical px-14 py-12 overflow-auto ${!submitted ? "justify-between gap-5" : "gap-10"}`}>
-				<Input submitted={submitted} setInput={setInput} handleKeyDown={handleKeyDown} />
+		<div className={`flex-grow vertical mx-5 sm:mx-auto sm:w-4/5 md:w-2/3  bg-white bg-opacity-75 ${!submitted && "hover:bg-opacity-100"} transition-all rounded-t-2xl overflow-hidden`}>
+			<div className={`flex-grow vertical px-8 py-8 sm:px-14 sm:py-12 overflow-auto ${!submitted ? "justify-between gap-5" : "gap-10"}`}>
+				<Input disabled={submitted} setInput={setInput} handleKeyDown={handleKeyDown} />
 				{!submitted && <GenerateButton text="Start writing" onClick={onSubmit} />}
 				{loading && <p>Generating...</p>}
 				{submitted && !loading && response && (
 					<>
 						{response.map((paragraph, index) => (
-							<p key={index} className="text-xl text-black -mb-3">
+							<p key={index} className="sm:text-lg md:text-xl text-black -mb-3">
 								{paragraph}
 							</p>
 						))}
-						<div className="horizontal space-between gap-2">
-							<button className="horizontal center">
-								<p className="text-sm font-medium text-zinc-500/80">Cancel</p>
+						<div className="horizontal space-between gap-1">
+							<button onClick={handleCancel} className="horizontal center gap-2 text-zinc-500/80">
+								<XCircleIcon className="size-4 " />
+								<p className="text-sm font-medium">Cancel</p>
 							</button>
 							<div className="flex gap-3">
 								<ActionButton text="Rewrite" onClick={onRewrite} />
@@ -93,7 +97,7 @@ const ChatPage = () => {
 					</>
 				)}
 			</div>
-		</motion.div>
+		</div>
 	);
 };
 
