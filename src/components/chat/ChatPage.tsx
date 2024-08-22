@@ -2,10 +2,9 @@ import { useState, KeyboardEvent } from "react";
 import { motion } from "framer-motion";
 import { handleCopy } from "@/lib/helpers/copy";
 import { useToast } from "@/components/ui/use-toast";
-import { XCircleIcon } from "@heroicons/react/24/outline";
 import Input from "./Input";
 import GenerateButton from "./GenerateButton";
-import ActionButton from "./ActionButton";
+import ResponseButtons from "./ResponseButtons";
 
 const ChatPage = () => {
 	const [input, setInput] = useState("");
@@ -83,17 +82,7 @@ const ChatPage = () => {
 								{paragraph}
 							</p>
 						))}
-						<div className="horizontal space-between gap-1">
-							<button onClick={handleCancel} className="horizontal center gap-2 text-zinc-500/80">
-								<XCircleIcon className="size-4 " />
-								<p className="text-sm font-medium">Cancel</p>
-							</button>
-							<div className="flex gap-3">
-								<ActionButton text="Rewrite" onClick={onRewrite} />
-								<ActionButton text="Copy" onClick={() => handleCopy({ text: response.join("\n\n"), toast })} />
-								<GenerateButton text="Continue writing" onClick={onContinue} />
-							</div>
-						</div>
+						<ResponseButtons handleCancel={handleCancel} onRewrite={onRewrite} onCopy={() => handleCopy({ text: response.join("\n\n"), toast })} onContinue={onContinue} />
 					</>
 				)}
 			</div>
