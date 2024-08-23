@@ -12,3 +12,5 @@ export const handleCopy = ({ text, toast }: { text: string; toast: (props: any) 
 			console.error("Failed to copy text: ", err);
 		});
 };
+
+export default handleCopy;

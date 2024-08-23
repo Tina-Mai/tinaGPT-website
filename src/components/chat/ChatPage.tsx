@@ -1,6 +1,8 @@
 import React, { useState, KeyboardEvent } from "react";
 import { motion } from "framer-motion";
 import { handleCopy } from "@/lib/helpers/copy";
+import { mergeTexts } from "@/lib/helpers/mergeTexts";
+import { cleanTexts } from "@/lib/helpers/cleanTexts";
 import { useToast } from "@/components/ui/use-toast";
 import Input from "./Input";
 import GenerateButton from "./GenerateButton";
@@ -14,12 +16,12 @@ const ChatPage = () => {
 	const [loading, setLoading] = useState(false);
 	const [focused, setFocused] = useState(false);
 	const { toast } = useToast();
+	const errorMessage = ["An error occurred while generating the writing :(", "An error occurred while continuing the writing :("];
 
 	const onSubmit = async () => {
 		if (input.trim().length === 0) return;
 		setSubmitted(true);
 		setLoading(true);
-
 		try {
 			const response = await fetch("/api/generateWriting", {
 				method: "POST",
@@ -28,16 +30,14 @@ const ChatPage = () => {
 				},
 				body: JSON.stringify({ prompt: input }),
 			});
-
 			if (!response.ok) {
-				throw new Error("Failed to generate writing");
+				throw new Error(errorMessage[0]);
 			}
-
 			const data = await response.json();
-			setGeneratedText(data.generatedText);
+			setGeneratedText(cleanTexts(data.generatedText));
 		} catch (error) {
 			console.error("Error generating writing:", error);
-			setGeneratedText(["An error occurred while generating the text."]);
+			setGeneratedText([errorMessage[0]]);
 		} finally {
 			setLoading(false);
 		}
@@ -56,22 +56,19 @@ const ChatPage = () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ ogPrompt: input, ogGeneratedText: generatedText }),
 			});
-			if (!response.ok) throw new Error("Failed to continue writing");
+			if (!response.ok) throw new Error(errorMessage[1]);
 			const { generatedText: newText } = await response.json();
 			setGeneratedText((prevText) => {
-				if (prevText.length === 0 || newText.length === 0) return [...prevText, ...newText];
-				const lastPrevText = prevText[prevText.length - 1];
-				const firstNewText = newText[0];
-				const joinChar = /^[.,!?—\-/]/.test(firstNewText) ? "" : " ";
-				return [...prevText.slice(0, -1), lastPrevText + joinChar + firstNewText, ...newText.slice(1)];
+				return mergeTexts(prevText, cleanTexts(newText));
 			});
 		} catch (error) {
 			console.error("Error continuing writing:", error);
-			setGeneratedText((prevText) => [...prevText, "An error occurred while continuing the text."]);
+			setGeneratedText((prevText) => [...prevText, errorMessage[1]]);
 		} finally {
 			setLoading(false);
 		}
 	};
+
 	// handle ⌘ + Enter
 	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
 		if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -110,7 +107,7 @@ const ChatPage = () => {
 						{generatedText.map((paragraph, index) => (
 							<p
 								key={index}
-								className="sm:text-lg md:text-xl text-black -mb-3"
+								className={`sm:text-lg md:text-xl -mb-3 ${(paragraph === errorMessage[0] || paragraph === errorMessage[1]) && "text-rose-400 text-sm italic"}`}
 								dangerouslySetInnerHTML={{
 									__html: paragraph
 										.replace(/^(#{1,3})\s(.*)$/gm, "<strong>$2</strong>")

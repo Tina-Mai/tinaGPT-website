@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateWriting } from "@/lib/openAI/generateWriting";
+import { cleanTexts } from "@/lib/helpers/cleanTexts";
 
 export async function POST(req: NextRequest) {
 	const { ogPrompt, ogGeneratedText } = await req.json();
@@ -20,23 +21,19 @@ export async function POST(req: NextRequest) {
 
 	// if the first part of firstText overlaps with the last part of the secondText, remove the overlap
 	function removeOverlap(firstText: string[], secondText: string[]) {
-		console.log("——————————");
-		const lastText = firstText[firstText.length - 1].trim();
-		const firstContinuedText = secondText[0].replace(/^\.{3}\s*/, "").trim(); // remove leading "..." if present
+		const cleanFirstText = cleanTexts(firstText);
+		const cleanSecondText = cleanTexts(secondText);
+		const lastText = cleanFirstText[cleanFirstText.length - 1].trim();
+		const firstContinuedText = cleanSecondText[0].trim();
 		for (let i = 0; i < lastText.length; i++) {
 			const possibleOverlap = lastText.slice(i);
 			if (firstContinuedText.startsWith(possibleOverlap)) {
-				console.log("OVERLAP FOUND:");
-				console.log("ogGeneratedText:", firstText);
-				console.log("continuedText:", secondText);
-				const result = firstContinuedText.slice(possibleOverlap.length);
+				const result = secondText[0].replace(/^\.{3}\s*/, "").slice(possibleOverlap.length);
 				return [result, ...secondText.slice(1)];
 			}
 		}
-		console.log("NO OVERLAP");
-		console.log("ogGeneratedText:", firstText);
-		console.log("continuedText:", secondText);
-		return [firstContinuedText, ...secondText.slice(1)];
+		const noOverlapResult = secondText[0].replace(/^\.{3}\s*/, "");
+		return [noOverlapResult, ...secondText.slice(1)];
 	}
 
 	try {
@@ -46,18 +43,16 @@ export async function POST(req: NextRequest) {
         "${ogGeneratedText}"
 
         ---
-        Continue from the last sentence, maintaining the style, tone, and context. Do not repeat the text above. Your response to be able to be seamlessly appended to the end of the previous text.`;
+        Continue from the last sentence, maintaining style, tone, and context. If the last word in the previous text is incomplete, add a "-" before continuing the word. Only add the "-" for incomplete words. Your response should seamlessly append to the previous text without repeating it.`;
 
+		// generate text until it's not equal to the original text (or even contains it)
 		let continuedText: string[] = [];
 		let attempts = 0;
 		const maxAttempts = 3;
-
-		// generate text until it's not equal to the original text (or even contains it)
 		do {
 			continuedText = await generateWriting(prompt);
 			attempts++;
 		} while (areTextsEqualOrContained(ogGeneratedText, continuedText) && attempts < maxAttempts);
-
 		if (attempts >= maxAttempts) {
 			console.error("Failed to generate unique continuation after multiple attempts");
 			return NextResponse.json({ generatedText: continuedText }, { status: 500 });
