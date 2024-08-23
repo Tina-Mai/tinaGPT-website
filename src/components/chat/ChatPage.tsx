@@ -53,16 +53,18 @@ const ChatPage = () => {
 		try {
 			const response = await fetch("/api/continueWriting", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ ogPrompt: input, ogGeneratedText: generatedText }),
 			});
-			if (!response.ok) {
-				throw new Error("Failed to continue writing");
-			}
-			const data = await response.json();
-			setGeneratedText(data.generatedText);
+			if (!response.ok) throw new Error("Failed to continue writing");
+			const { generatedText: newText } = await response.json();
+			setGeneratedText((prevText) => {
+				if (prevText.length === 0 || newText.length === 0) return [...prevText, ...newText];
+				const lastPrevText = prevText[prevText.length - 1];
+				const firstNewText = newText[0];
+				const joinChar = /^[.,!?—\-/]/.test(firstNewText) ? "" : " ";
+				return [...prevText.slice(0, -1), lastPrevText + joinChar + firstNewText, ...newText.slice(1)];
+			});
 		} catch (error) {
 			console.error("Error continuing writing:", error);
 			setGeneratedText((prevText) => [...prevText, "An error occurred while continuing the text."]);
@@ -70,7 +72,6 @@ const ChatPage = () => {
 			setLoading(false);
 		}
 	};
-
 	// handle ⌘ + Enter
 	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
 		if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -107,9 +108,16 @@ const ChatPage = () => {
 				{submitted && generatedText.length > 0 && (
 					<>
 						{generatedText.map((paragraph, index) => (
-							<p key={index} className="sm:text-lg md:text-xl text-black -mb-3">
-								{paragraph}
-							</p>
+							<p
+								key={index}
+								className="sm:text-lg md:text-xl text-black -mb-3"
+								dangerouslySetInnerHTML={{
+									__html: paragraph
+										.replace(/^(#{1,3})\s(.*)$/gm, "<strong>$2</strong>")
+										.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+										.replace(/\*(.*?)\*/g, "<em>$1</em>"),
+								}}
+							/>
 						))}
 						{loading && <Loading />}
 						<ResponseButtons handleCancel={handleCancel} onRewrite={onRewrite} onCopy={() => handleCopy({ text: generatedText.join("\n\n"), toast })} onContinue={onContinue} />
