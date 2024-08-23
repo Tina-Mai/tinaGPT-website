@@ -18,6 +18,8 @@ export async function generateWriting(prompt: string): Promise<string[]> {
 				{ role: "user", content: prompt },
 			],
 			max_tokens: 5,
+			temperature: 0.7, // temperature for creativity control
+			n: 1, // number of completions to generate
 		});
 
 		const content = response.choices[0].message.content || "No response generated.";

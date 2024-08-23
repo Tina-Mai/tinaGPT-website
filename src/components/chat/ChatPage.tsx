@@ -10,7 +10,7 @@ import Loading from "./Loading";
 const ChatPage = () => {
 	const [input, setInput] = useState("");
 	const [submitted, setSubmitted] = useState(false);
-	const [response, setResponse] = useState<string[]>([]);
+	const [generatedText, setGeneratedText] = useState<string[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [focused, setFocused] = useState(false);
 	const { toast } = useToast();
@@ -34,22 +34,41 @@ const ChatPage = () => {
 			}
 
 			const data = await response.json();
-			setResponse(data.generatedText);
+			setGeneratedText(data.generatedText);
 		} catch (error) {
 			console.error("Error generating writing:", error);
-			setResponse(["An error occurred while generating the text."]);
+			setGeneratedText(["An error occurred while generating the text."]);
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	const onRewrite = async () => {
-		setResponse([]);
+		setGeneratedText([]);
 		onSubmit();
 	};
 
 	const onContinue = async () => {
-		// continue generation
+		setLoading(true);
+		try {
+			const response = await fetch("/api/continueWriting", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ ogPrompt: input, ogGeneratedText: generatedText }),
+			});
+			if (!response.ok) {
+				throw new Error("Failed to continue writing");
+			}
+			const data = await response.json();
+			setGeneratedText(data.generatedText);
+		} catch (error) {
+			console.error("Error continuing writing:", error);
+			setGeneratedText((prevText) => [...prevText, "An error occurred while continuing the text."]);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	// handle ⌘ + Enter
@@ -68,7 +87,7 @@ const ChatPage = () => {
 	};
 
 	const handleCancel = () => {
-		setResponse([]);
+		setGeneratedText([]);
 		setSubmitted(false);
 	};
 
@@ -84,15 +103,16 @@ const ChatPage = () => {
 			<div className={`flex-grow vertical px-8 py-8 sm:px-14 sm:py-12 overflow-auto ${!submitted ? "justify-between gap-5" : "gap-7"}`}>
 				<Input disabled={submitted} setInput={setInput} handleKeyDown={handleKeyDown} setFocused={setFocused} />
 				{!submitted && <GenerateButton text="Start writing" onClick={onSubmit} />}
-				{loading && <Loading />}
-				{submitted && !loading && response && (
+				{loading && generatedText.length <= 0 && <Loading />}
+				{submitted && generatedText.length > 0 && (
 					<>
-						{response.map((paragraph, index) => (
+						{generatedText.map((paragraph, index) => (
 							<p key={index} className="sm:text-lg md:text-xl text-black -mb-3">
 								{paragraph}
 							</p>
 						))}
-						<ResponseButtons handleCancel={handleCancel} onRewrite={onRewrite} onCopy={() => handleCopy({ text: response.join("\n\n"), toast })} onContinue={onContinue} />
+						{loading && <Loading />}
+						<ResponseButtons handleCancel={handleCancel} onRewrite={onRewrite} onCopy={() => handleCopy({ text: generatedText.join("\n\n"), toast })} onContinue={onContinue} />
 					</>
 				)}
 			</div>
