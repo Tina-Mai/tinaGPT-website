@@ -105,8 +105,12 @@ const ChatPage = () => {
 				{submitted && generatedText.length > 0 && (
 					<>
 						{generatedText.map((paragraph, index) => (
-							<p
+							<motion.p
 								key={index}
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -20 }}
+								transition={{ duration: 0.5, ease: "easeOut" }} // Adjusted transition properties
 								className={`sm:text-lg md:text-xl -mb-3 ${(paragraph === errorMessage[0] || paragraph === errorMessage[1]) && "text-rose-400 text-sm italic"}`}
 								dangerouslySetInnerHTML={{
 									__html: paragraph

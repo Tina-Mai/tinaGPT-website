@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         "${ogGeneratedText}"
 
         ---
-        Continue from the last sentence, maintaining style, tone, and context. If the last word in the previous text is incomplete, add a "-" before continuing the word. Only add the "-" for incomplete words. Your response should seamlessly append to the previous text without repeating it.`;
+        Continue from the last sentence, maintaining the style, tone, and context. Do not repeat the text above. Your response to be able to be seamlessly appended to the end of the previous text.`;
 
 		// generate text until it's not equal to the original text (or even contains it)
 		let continuedText: string[] = [];

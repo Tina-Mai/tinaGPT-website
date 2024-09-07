@@ -9,7 +9,7 @@ const MemoizedFooter = memo(Footer);
 
 export default function Home() {
 	return (
-		<main className="vertical mx-auto min-h-[calc(100dvh)] justify-start overflow-hidden">
+		<main className="vertical mx-auto min-h-[100dvh] justify-start overflow-hidden">
 			<MemoizedHeader />
 			<ChatPage />
 			<MemoizedFooter />

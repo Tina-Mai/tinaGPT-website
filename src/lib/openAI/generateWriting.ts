@@ -17,7 +17,7 @@ export async function generateWriting(prompt: string): Promise<string[]> {
 				},
 				{ role: "user", content: prompt },
 			],
-			max_tokens: 20,
+			max_tokens: 50,
 			temperature: 0.8, // temperature for creativity control
 			n: 1, // number of completions to generate
 		});
