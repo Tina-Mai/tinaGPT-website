@@ -50,7 +50,8 @@ export async function POST(req: NextRequest) {
 		let attempts = 0;
 		const maxAttempts = 3;
 		do {
-			continuedText = await generateWriting(prompt);
+			// when continuing, max is only 50 tokens (as opposed to 100 tokens for the original generation)
+			continuedText = await generateWriting(prompt, 50);
 			attempts++;
 		} while (areTextsEqualOrContained(ogGeneratedText, continuedText) && attempts < maxAttempts);
 		if (attempts >= maxAttempts) {

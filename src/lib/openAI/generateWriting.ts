@@ -4,11 +4,13 @@ const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function generateWriting(prompt: string): Promise<string[]> {
+const finetunedModel = process.env.FINETUNED_MODEL || "";
+
+export async function generateWriting(prompt: string, max_tokens: number = 100): Promise<string[]> {
 	try {
 		const response = await openai.chat.completions.create({
-			model: "gpt-4o-mini",
-			// model: "ft:gpt-4o-2024-08-06:personal:tinagpt:9yto1F3n",
+			// model: "gpt-4o-mini",
+			model: finetunedModel,
 			messages: [
 				{
 					role: "system",
@@ -17,7 +19,7 @@ export async function generateWriting(prompt: string): Promise<string[]> {
 				},
 				{ role: "user", content: prompt },
 			],
-			max_tokens: 50,
+			max_tokens: max_tokens, // use the provided max_tokens or default to 100
 			temperature: 0.8, // temperature for creativity control
 			n: 1, // number of completions to generate
 		});
